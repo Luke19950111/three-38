@@ -31,8 +31,15 @@ document.body.appendChild( renderer.domElement )
 // 导入模型
 const loader = new GLTFLoader()
 loader.load('./3d/chinese_old_hotel/scene.gltf', function ( gltf ) {
+  // 获取模型的几何体
   const model = gltf.scene
-  model.position.set(0, 0, 0)
+  var boundingBox = new THREE.Box3().setFromObject(model);
+  var center = new THREE.Vector3()
+  boundingBox.getCenter(center)
+
+  // 设置模型的位置为几何体中心的负值
+  model.position.sub(center)
+
   scene.add(model)
 }, undefined, function ( error ) { 
   console.error( error )
@@ -50,6 +57,11 @@ controls.minZoom = Infinity
 controls.maxZoom = Infinity
 controls.enablePan = true
 controls.panSpeed = 5.0
+controls.mouseButtons = {
+  LEFT: THREE.MOUSE.ROTATE,
+  MIDDLE: THREE.MOUSE.DOLLY,
+	RIGHT: THREE.MOUSE.PAN
+}
 
 // 循环渲染场景
 function animate() {
